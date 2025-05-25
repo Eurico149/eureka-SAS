@@ -1,15 +1,27 @@
 import express from "express";
-import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes";
+import {testDB} from "./conns/connectionMaria";
+import redis from "./conns/connectionRedis";
 
 
-dotenv.config();
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 app.use(express.json());
+
+app.use('/user', userRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 })
 
-app.use("/user", userRoutes)
+
+
+testDB();
+
+redis.on('connect', () => {
+    console.log('Redis Connected!');
+});
+
+redis.on('error', (err) => {
+    console.error('Erro to connect to redis:', err);
+});
