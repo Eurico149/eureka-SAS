@@ -4,9 +4,9 @@ import mysql from 'mysql2/promise';
 const maria = mysql.createPool({
     host: process.env.DB_HOST ?? 'mariadb',
     port: parseInt(process.env.DB_PORT ?? '3306', 10),
-    user: process.env.DB_USER ?? 'auth_user',
-    password: process.env.DB_PASSWORD ?? 'auth_password',
-    database: process.env.DB ?? 'auth_db',
+    user: process.env.MARIA_USER ?? 'user',
+    password: process.env.MARIA_PASSWORD ?? 'password',
+    database: process.env.MARIA_DB_NAME ?? 'database',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,

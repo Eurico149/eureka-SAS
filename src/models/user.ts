@@ -1,6 +1,8 @@
 import {z} from "zod";
 
+
 export const HalfUser = z.object({
+    admin_id: z.string(),
     username: z.string(),
     nickname: z.string().nullable(),
     password: z.string(),

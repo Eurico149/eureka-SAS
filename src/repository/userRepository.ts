@@ -9,6 +9,7 @@ export const registerUser = async (halfUser: HalfUserType) => {
 
     const values = [
         userUuid,
+        halfUser.admin_id,
         halfUser.username,
         halfUser.nickname,
         halfUser.password,
@@ -20,13 +21,14 @@ export const registerUser = async (halfUser: HalfUserType) => {
 
     try {
         await maria.query(
-            "INSERT INTO user (user_id, username, nickname, password, birthday, email, phone, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO user (user_id, admin_id, username, nickname, password, birthday, email, phone, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             values);
 
         const now = new Date();
 
         const user: UserType = {
             user_id: userUuid,
+            admin_id: halfUser.admin_id,
             username: halfUser.username,
             nickname: halfUser.nickname,
             password: halfUser.password,

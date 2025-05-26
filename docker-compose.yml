@@ -5,10 +5,10 @@ services:
     restart: unless-stopped
     container_name: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: auth_db
-      MYSQL_USER: auth_user
-      MYSQL_PASSWORD: auth_password
+      MYSQL_ROOT_PASSWORD: ${MARIA_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MARIA_DB_NAME:-database}
+      MYSQL_USER: ${MARIA_USER:-user}
+      MYSQL_PASSWORD: ${MARIA_PASSWORD:-password}
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./docker-config/mariaDB/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,6 +18,8 @@ services:
     restart: unless-stopped
     container_name: redis
     command: redis-server --maxmemory 200mb --maxmemory-policy allkeys-lru
+    environment:
+      - REDIS_PASSWORD= ${REDIS_PASSWORD:-redispassword}
 
   nginx:
     image: nginx:latest
@@ -36,6 +38,16 @@ services:
     depends_on:
       - mariadb
       - redis
+    environment:
+      - MARIA_USER=${MARIA_USER:-user}
+      - MARIA_PASSWORD=${MARIA_PASSWORD:-password}
+      - MARIA_DB_NAME=${MARIA_DB_NAME:-database}
+      - MARIA_ROOT_PASSWORD=${MARIA_ROOT_PASSWORD:-rootpassword}
+      - MARIA_HOST=${MARIA_HOST:-mariadb}
+      - MARIA_PORT=${MARIA_PORT:-3306}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redispassword}
 
 volumes:
   mariadb_data:

@@ -1,5 +1,14 @@
+CREATE TABLE admin(
+    admin_id CHAR(36) PRIMARY KEY,
+    username VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 CREATE TABLE user(
     user_id CHAR(36),
+    admin_id CHAR(36),
     username VARCHAR(35) NOT NULL UNIQUE,
     nickname VARCHAR(25),
     password VARCHAR(255) NOT NULL,
@@ -8,18 +17,33 @@ CREATE TABLE user(
     phone VARCHAR(16),
     address VARCHAR(160),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES admin(admin_id),
+    PRIMARY KEY (user_id, admin_id)
 );
 
-CREATE TABLE rf_token(
-    token_id CHAR(36) DEFAULT (UUID()) PRIMARY KEY,
-    user_id CHAR(36) NOT NULL,
-    token VARCHAR() NOT NULL,
+CREATE TABLE user_rf_token(
+    user_token_id CHAR(36),
+    user_id CHAR(36),
+    admin_id CHAR(36) NOT NULL,
+    token VARCHAR(64) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expired_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(user_id),
+    FOREIGN KEY (user_id, admin_id) REFERENCES user(user_id, admin_id),
+    PRIMARY KEY (token_id, user_id),
     CHECK (expired_at > created_at)
 );
 
-CREATE UNIQUE INDEX idx_token_value ON rf_token(token);
+CREATE TABLE admin_token(
+    admin_token_id CHAR(36),
+    admin_id CHAR(36),
+    token VARCHAR(64) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expired_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (admin_id) REFERENCES admin(admin_id),
+    PRIMARY KEY (token_id, admin_id),
+    CHECK (expired_at > created_at)
+);
+
+CREATE UNIQUE INDEX idx_user_token_value ON user_rf_token(token);
 

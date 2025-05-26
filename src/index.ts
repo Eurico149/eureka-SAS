@@ -1,14 +1,16 @@
 import express from "express";
-import userRoutes from "./routes/userRoutes";
-import {testDB} from "./conns/connectionMaria";
 import redis from "./conns/connectionRedis";
+import {testDB} from "./conns/connectionMaria";
+import userRoutes from "./routes/userRoutes";
+import adminRoutes from "./routes/adminRoutes";
 
 
 const app = express();
-const PORT = process.env.PORT ?? 3000;
+const PORT = process.env.PORT ?? 80;
 app.use(express.json());
 
 app.use('/user', userRoutes)
+app.use('/admin', adminRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
