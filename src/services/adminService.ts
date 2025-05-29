@@ -11,4 +11,5 @@ const register = async (admin: HalfAdminType) => {
     return rest;
 }
 
+
 export default {register};

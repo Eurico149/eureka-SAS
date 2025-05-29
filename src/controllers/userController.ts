@@ -6,7 +6,11 @@ import {HalfUser, HalfUserType} from "../models/user";
 const register = async (req: Request, res: Response):Promise<any> => {
     const userValidation = HalfUser.safeParse(req.body);
     if (!userValidation.success) {
-        return res.status(400).json({"message": "Invalid user data"});
+        const simplifiedErrors = userValidation.error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+        }));
+        return res.status(400).json({"message": "Invalid user data", "errors": simplifiedErrors});
     }
     const user: HalfUserType = userValidation.data;
 

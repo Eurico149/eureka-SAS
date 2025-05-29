@@ -6,7 +6,11 @@ import {HalfAdmin, HalfAdminType} from "../models/admin";
 const register = async (req: Request, res: Response):Promise<any> => {
     const adminValidation = HalfAdmin.safeParse(req.body);
     if (!adminValidation.success) {
-        return res.status(400).json({"message": "Invalid admin data"});
+        const simplifiedErrors = adminValidation.error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+        }));
+        return res.status(400).json({"message": "Invalid Admin Data", "errors": simplifiedErrors});
     }
     const admin: HalfAdminType = adminValidation.data;
 

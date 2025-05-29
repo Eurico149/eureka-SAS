@@ -20,7 +20,7 @@ CREATE TABLE user(
     address VARCHAR(160),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES admin(admin_id),
+    FOREIGN KEY (admin_id) REFERENCES admin(admin_id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, admin_id)
 );
 
@@ -31,7 +31,7 @@ CREATE TABLE user_rf_token(
     token VARCHAR(64) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expired_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (user_id, admin_id) REFERENCES user(user_id, admin_id),
+    FOREIGN KEY (user_id, admin_id) REFERENCES user(user_id, admin_id) ON DELETE CASCADE,
     PRIMARY KEY (token_id, user_id),
     CHECK (expired_at > created_at)
 );
@@ -42,7 +42,7 @@ CREATE TABLE admin_token(
     token VARCHAR(64) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expired_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (admin_id) REFERENCES admin(admin_id),
+    FOREIGN KEY (admin_id) REFERENCES admin(admin_id) ON DELETE CASCADE,
     PRIMARY KEY (token_id, admin_id),
     CHECK (expired_at > created_at)
 );
