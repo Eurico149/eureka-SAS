@@ -3,7 +3,7 @@ import {HalfUserType, UserType} from "../models/user";
 import {v4} from "uuid";
 
 
-export const registerUser = async (halfUser: HalfUserType) => {
+const register = async (halfUser: HalfUserType) => {
 
     const userUuid = v4();
 
@@ -45,3 +45,5 @@ export const registerUser = async (halfUser: HalfUserType) => {
         throw new Error("Error registering user");
     }
 }
+
+export default {register}

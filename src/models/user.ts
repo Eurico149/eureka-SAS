@@ -3,13 +3,13 @@ import {z} from "zod";
 
 export const HalfUser = z.object({
     admin_id: z.string(),
-    username: z.string(),
-    nickname: z.string().nullable(),
-    password: z.string(),
+    username: z.string().max(100, 'Username must be at most 100 characters long').min(1, 'Username must be at least 1 character long'),
+    nickname: z.string().max(25, 'Nickname must be at most 25 characters long').min(1, 'Nickname must be at least 1 character long').nullable(),
+    password: z.string().max(255, 'Password must be at most 255 characters long').min(8, 'Password must be at least 8 characters long'),
     birthday: z.string().nullable().transform(str => str ? new Date(str): null),
     email: z.string().email().nullable(),
-    phone: z.string().nullable(),
-    address: z.string().nullable()
+    phone: z.string().max(16, 'Phone number must be at most 16 characters long').nullable(),
+    address: z.string().max(160, 'Address number must be at most 160 characters long').min(1, 'Address must be at least 1 characters long').nullable()
 }).strict();
 
 export const User = HalfUser.extend({

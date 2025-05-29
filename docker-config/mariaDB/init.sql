@@ -1,7 +1,9 @@
 CREATE TABLE admin(
     admin_id CHAR(36) PRIMARY KEY,
-    username VARCHAR(100) UNIQUE,
-    password VARCHAR(255),
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(256) UNIQUE NOT NULL,
+    phone VARCHAR(16) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -9,7 +11,7 @@ CREATE TABLE admin(
 CREATE TABLE user(
     user_id CHAR(36),
     admin_id CHAR(36),
-    username VARCHAR(35) NOT NULL UNIQUE,
+    username VARCHAR(100) NOT NULL UNIQUE,
     nickname VARCHAR(25),
     password VARCHAR(255) NOT NULL,
     birthday DATE,
@@ -46,4 +48,6 @@ CREATE TABLE admin_token(
 );
 
 CREATE UNIQUE INDEX idx_user_token_value ON user_rf_token(token);
+
+CREATE UNIQUE INDEX idx_admin_token_value ON admin_token(token);
 
