@@ -36,22 +36,8 @@ CREATE TABLE user_rf_token(
     CHECK (expired_at > created_at)
 );
 
-CREATE TABLE admin_token(
-    admin_token_id CHAR(36),
-    admin_id CHAR(36),
-    token VARCHAR(64) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expired_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (admin_id) REFERENCES admin(admin_id) ON DELETE CASCADE,
-    PRIMARY KEY (token_id, admin_id),
-    CHECK (expired_at > created_at)
-);
-
 CREATE UNIQUE INDEX idx_user_token_value ON user_rf_token(token);
-
-CREATE UNIQUE INDEX idx_admin_token_value ON admin_token(token);
 
 CREATE UNIQUE INDEX idx_admin_username on admin(username);
 
 CREATE UNIQUE INDEX idx_user_username on user(username);
-
