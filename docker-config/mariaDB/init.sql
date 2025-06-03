@@ -51,3 +51,7 @@ CREATE UNIQUE INDEX idx_user_token_value ON user_rf_token(token);
 
 CREATE UNIQUE INDEX idx_admin_token_value ON admin_token(token);
 
+CREATE UNIQUE INDEX idx_admin_username on admin(username);
+
+CREATE UNIQUE INDEX idx_user_username on user(username);
+

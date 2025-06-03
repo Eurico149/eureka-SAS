@@ -1,7 +1,6 @@
 import {ResultSetHeader, RowDataPacket} from "mysql2";
 import maria from "../conns/connectionMaria";
 import {v4} from "uuid";
-import bcrypt from "bcrypt";
 import {HalfAdminType, AdminType} from "../models/admin";
 
 
@@ -41,62 +40,63 @@ const register = async (halfAdmin: HalfAdminType) => {
 
 
 const findById = async (adminId: string) => {
+    let rows;
     try {
-        const [rows] = await maria.query<RowDataPacket[]>(
+        [rows] = await maria.query<RowDataPacket[]>(
             "SELECT admin_id, username, email, phone, createdAt, updatedAt FROM admin WHERE admin_id = ?",
             [adminId]
         );
-
-        if (rows.length !== 1) {
-            return null;
-        }
-
-        const row = rows[0];
-
-        const admin: AdminType = {
-            admin_id: row.admin_id,
-            username: row.username,
-            password: '',
-            email: row.email,
-            phone: row.phone,
-            createdAt: row.createdAt,
-            updatedAt: row.updatedAt,
-        }
-
-        return admin;
     } catch (error) {
         throw new Error("Error finding admin");
     }
+
+    if (rows.length === 0) return null;
+    if (rows.length > 1) throw new Error("Error, multiple admins with id: " + adminId);
+
+    const row = rows[0];
+
+    const admin: AdminType = {
+        admin_id: row.admin_id,
+        username: row.username,
+        password: '',
+        email: row.email,
+        phone: row.phone,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+    }
+
+    return admin;
+
 };
 
 
 const findByUsername = async (username: string) => {
+    let rows;
     try {
-        const [rows] = await maria.query<RowDataPacket[]>(
+         [rows] = await maria.query<RowDataPacket[]>(
             "SELECT admin_id, username, email, phone, createdAt, updatedAt FROM admin WHERE username = ?",
             [username]
         );
-
-        if (rows.length !== 1) {
-            return null;
-        }
-
-        const row = rows[0];
-
-        const admin: AdminType = {
-            admin_id: row.admin_id,
-            username: row.username,
-            password: '',
-            email: row.email,
-            phone: row.phone,
-            createdAt: row.createdAt,
-            updatedAt: row.updatedAt,
-        }
-
-        return admin;
     } catch (error) {
         throw new Error("Error finding admin");
     }
+
+    if (rows.length === 0) return null;
+    if (rows.length > 1) throw new Error("Error, multiple admins with username: " + username);
+
+    const row = rows[0];
+
+    const admin: AdminType = {
+        admin_id: row.admin_id,
+        username: row.username,
+        password: '',
+        email: row.email,
+        phone: row.phone,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+    }
+
+    return admin;
 };
 
 
@@ -114,22 +114,11 @@ const del = async (adminId: string) => {
 };
 
 
-const changePassword = async (adminId: string, newPassword: string, oldPassword: string) => {
+const updatePassword = async (adminId: string, inputPassword: string) => {
     try {
-        const [rows] = await maria.query<RowDataPacket[]>(
-            "SELECT password FROM admin WHERE admin_id = ?",
-            [adminId]
-        );
-
-        const aux = bcrypt.compareSync(oldPassword, rows[0].password);
-
-        if (!aux){
-            return false;
-        }
-
         const [result] = await maria.query<ResultSetHeader>(
             "UPDATE admin SET password = ? WHERE admin_id = ?",
-            [newPassword, adminId]
+            [inputPassword, adminId]
         );
 
         return result.affectedRows === 1;
@@ -139,7 +128,7 @@ const changePassword = async (adminId: string, newPassword: string, oldPassword:
 }
 
 
-const changeEmail = async (adminId: string, newEmail: string) => {
+const updateEmail = async (adminId: string, newEmail: string | null) => {
     try {
         const [result] = await maria.query<ResultSetHeader>(
             "UPDATE admin SET email = ? WHERE admin_id = ?",
@@ -153,7 +142,7 @@ const changeEmail = async (adminId: string, newEmail: string) => {
 }
 
 
-const changePhone = async (adminId: string, newPhone: string) => {
+const updatePhone = async (adminId: string, newPhone: string | null) => {
     try {
         const [result] = await maria.query<ResultSetHeader>(
             "UPDATE admin SET phone = ? WHERE admin_id = ?",
@@ -167,7 +156,7 @@ const changePhone = async (adminId: string, newPhone: string) => {
 }
 
 
-const changeUsername = async (adminId: string, newUsername: string) => {
+const updateUsername = async (adminId: string, newUsername: string) => {
     try {
         const [result] = await maria.query<ResultSetHeader>(
             "UPDATE admin SET username = ? WHERE admin_id = ?",
@@ -181,4 +170,4 @@ const changeUsername = async (adminId: string, newUsername: string) => {
 }
 
 
-export default {register, findById, findByUsername, changeUsername, changeEmail, changePassword, changePhone}
+export default {register, del, findById, findByUsername, updateUsername, updateEmail, updatePassword, updatePhone}
