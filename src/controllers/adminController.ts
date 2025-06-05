@@ -17,6 +17,7 @@ const register = async (req: Request, res: Response):Promise<any> => {
     try{
         return res.status(201).json(await admService.register(admin));
     } catch (error) {
+        console.error(error);
         return res.status(400).json({"message": "Error registering admin"});
     }
 }

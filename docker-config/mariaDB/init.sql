@@ -33,7 +33,8 @@ CREATE TABLE user_rf_token(
     expired_at TIMESTAMP NOT NULL,
     FOREIGN KEY (user_id, admin_id) REFERENCES user(user_id, admin_id) ON DELETE CASCADE,
     PRIMARY KEY (token_id, user_id),
-    CHECK (expired_at > created_at)
+    CHECK (expired_at > created_at),
+    UNIQUE (admin_id, token)
 );
 
 CREATE UNIQUE INDEX idx_user_token_value ON user_rf_token(token);

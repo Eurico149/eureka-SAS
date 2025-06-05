@@ -34,6 +34,7 @@ const register = async (halfAdmin: HalfAdminType) => {
 
         return admin;
     } catch (error) {
+        console.log(error);
         throw new Error("Error registering admin");
     }
 }
@@ -47,6 +48,7 @@ const findById = async (adminId: string) => {
             [adminId]
         );
     } catch (error) {
+        console.log(error);
         throw new Error("Error finding admin");
     }
 
@@ -78,6 +80,7 @@ const findByUsername = async (username: string) => {
             [username]
         );
     } catch (error) {
+        console.log(error);
         throw new Error("Error finding admin");
     }
 
@@ -109,6 +112,7 @@ const del = async (adminId: string) => {
 
         return result.affectedRows === 1;
     } catch (error) {
+        console.log(error);
         throw new Error("Error deleting admin");
     }
 };
@@ -123,6 +127,7 @@ const updatePassword = async (adminId: string, inputPassword: string) => {
 
         return result.affectedRows === 1;
     } catch (error) {
+        console.log(error);
         throw new Error("Error updating password");
     }
 }
@@ -137,6 +142,7 @@ const updateEmail = async (adminId: string, newEmail: string | null) => {
 
         return result.affectedRows === 1;
     } catch (error) {
+        console.log(error);
         throw new Error("Error updating email");
     }
 }
@@ -151,6 +157,7 @@ const updatePhone = async (adminId: string, newPhone: string | null) => {
 
         return result.affectedRows === 1;
     } catch (error) {
+        console.log(error);
         throw new Error("Error updating phone");
     }
 }
@@ -165,6 +172,7 @@ const updateUsername = async (adminId: string, newUsername: string) => {
 
         return result.affectedRows === 1;
     } catch (error) {
+        console.log(error);
         throw new Error("Error updating username");
     }
 }
