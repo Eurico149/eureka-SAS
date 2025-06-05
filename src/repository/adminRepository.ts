@@ -6,21 +6,22 @@ import {HalfAdminType, AdminType} from "../models/admin";
 
 const register = async (halfAdmin: HalfAdminType) => {
     const adminUuid = v4();
+    const currDate = new Date();
 
     const values = [
         adminUuid,
         halfAdmin.username,
         halfAdmin.password,
         halfAdmin.email,
-        halfAdmin.phone
+        halfAdmin.phone,
+        currDate,
+        currDate
     ];
 
     try {
         await maria.query(
-            "INSERT INTO admin (admin_id, username, password, email, phone) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO admin (admin_id, username, password, email, phone, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
             values);
-
-        const now = new Date();
 
         const admin: AdminType = {
             admin_id: adminUuid,
@@ -28,8 +29,8 @@ const register = async (halfAdmin: HalfAdminType) => {
             password: '',
             email: halfAdmin.email,
             phone: halfAdmin.phone,
-            createdAt: new Date(now),
-            updatedAt: new Date(now),
+            created_at: currDate,
+            updated_at: currDate,
         }
 
         return admin;
@@ -41,65 +42,40 @@ const register = async (halfAdmin: HalfAdminType) => {
 
 
 const findById = async (adminId: string) => {
-    let rows;
     try {
-        [rows] = await maria.query<RowDataPacket[]>(
-            "SELECT admin_id, username, email, phone, createdAt, updatedAt FROM admin WHERE admin_id = ?",
-            [adminId]
-        );
+        const [rows] = await maria.query<RowDataPacket[]>(
+            "SELECT admin_id, username, email, phone, created_at, updated_at FROM admin WHERE admin_id = ?",
+            [adminId]);
+
+        if (rows.length === 0) return null;
+
+        rows[0].password = '';
+
+        return rows[0] as AdminType;
     } catch (error) {
         console.log(error);
         throw new Error("Error finding admin");
     }
-
-    if (rows.length === 0) return null;
-    if (rows.length > 1) throw new Error("Error, multiple admins with id: " + adminId);
-
-    const row = rows[0];
-
-    const admin: AdminType = {
-        admin_id: row.admin_id,
-        username: row.username,
-        password: '',
-        email: row.email,
-        phone: row.phone,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-    }
-
-    return admin;
-
 };
 
 
 const findByUsername = async (username: string) => {
-    let rows;
     try {
-         [rows] = await maria.query<RowDataPacket[]>(
-            "SELECT admin_id, username, email, phone, createdAt, updatedAt FROM admin WHERE username = ?",
-            [username]
-        );
+         const [rows] = await maria.query<RowDataPacket[]>(
+            "SELECT admin_id, username, email, phone, created_at, updated_at FROM admin WHERE username = ?",
+            [username]);
+
+        if (rows.length === 0) return null;
+
+        rows[0].password = '';
+
+        return rows[0] as AdminType;
     } catch (error) {
         console.log(error);
         throw new Error("Error finding admin");
     }
 
-    if (rows.length === 0) return null;
-    if (rows.length > 1) throw new Error("Error, multiple admins with username: " + username);
 
-    const row = rows[0];
-
-    const admin: AdminType = {
-        admin_id: row.admin_id,
-        username: row.username,
-        password: '',
-        email: row.email,
-        phone: row.phone,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-    }
-
-    return admin;
 };
 
 

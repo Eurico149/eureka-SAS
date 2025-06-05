@@ -2,7 +2,7 @@ import {z} from "zod";
 
 
 export const HalfUser = z.object({
-    admin_id: z.string(),
+    admin_id: z.string().length(36, 'Admin ID must be 36 characters long'),
     username: z.string().max(100, 'Username must be at most 100 characters long').min(1, 'Username must be at least 1 character long'),
     nickname: z.string().max(25, 'Nickname must be at most 25 characters long').min(1, 'Nickname must be at least 1 character long').nullable(),
     password: z.string().max(255, 'Password must be at most 255 characters long').min(8, 'Password must be at least 8 characters long'),
@@ -13,9 +13,9 @@ export const HalfUser = z.object({
 }).strict();
 
 export const User = HalfUser.extend({
-    user_id: z.string(),
-    createdAt: z.string().transform(str => new Date(str)),
-    updatedAt: z.string().transform(str => new Date(str))
+    user_id: z.string().length(36, 'User ID must be 36 characters long'),
+    created_at: z.string().transform(str => new Date(str)),
+    updated_at: z.string().transform(str => new Date(str))
 }).strict();
 
 export type UserType = z.infer<typeof User>;

@@ -7,6 +7,7 @@ import {ResultSetHeader, RowDataPacket} from "mysql2";
 const register = async (halfUser: HalfUserType) => {
 
     const userUuid = v4();
+    const currentDate = new Date();
 
     const values = [
         userUuid,
@@ -17,28 +18,28 @@ const register = async (halfUser: HalfUserType) => {
         halfUser.birthday ? halfUser.birthday.toISOString().slice(0, 10) : null,
         halfUser.email,
         halfUser.phone,
-        halfUser.address
+        halfUser.address,
+        currentDate,
+        currentDate
     ];
 
     try {
         await maria.query(
-            "INSERT INTO user (user_id, admin_id, username, nickname, password, birthday, email, phone, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO user (user_id, admin_id, username, nickname, password, birthday, email, phone, address, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             values);
-
-        const now = new Date();
 
         const user: UserType = {
             user_id: userUuid,
             admin_id: halfUser.admin_id,
             username: halfUser.username,
             nickname: halfUser.nickname,
-            password: halfUser.password,
+            password: '',
             birthday: halfUser.birthday,
             email: halfUser.email,
             phone: halfUser.phone,
             address: halfUser.address,
-            createdAt: new Date(now),
-            updatedAt: new Date(now),
+            created_at: currentDate,
+            updated_at: currentDate,
         }
 
         return user;
@@ -49,70 +50,38 @@ const register = async (halfUser: HalfUserType) => {
 }
 
 
-const findByUsername = async (username: string) => {
-    let rows;
+const findByUsername = async (username: string, adminId: string) => {
     try {
-        [rows] = await maria.query<RowDataPacket[]>(
-            "SELECT * FROM user WHERE username = ?",
-            username);
+        const [rows] = await maria.query<RowDataPacket[]>(
+            "SELECT user_id, admin_id, username, nickname, birthday, email, phone, address, created_at, updated_at FROM user WHERE username = ? AND admin_id = ?",
+            [username, adminId]);
+
+        if (rows.length === 0) return null
+
+        rows[0].password = '';
+
+        return rows[0] as UserType;
     } catch (error) {
         console.log(error);
         throw new Error("Error finding user");
     }
-
-    if (rows.length === 0) return null
-    if (rows.length > 1) throw new Error("Error, multiple users with username: " + username);
-
-    const row = rows[0];
-
-    const user: UserType = {
-        user_id: row.user_id,
-        admin_id: row.admin_id,
-        username: row.username,
-        nickname: row.nickname,
-        password: '',
-        birthday: row.birthday,
-        email: row.email,
-        phone: row.phone,
-        address: row.address,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-    }
-
-    return user;
 }
 
-const findById = async (userId: string) => {
-    let rows;
+const findById = async (userId: string, adminId: string) => {
     try {
-        [rows] = await maria.query<RowDataPacket[]>(
-            "SELECT * FROM user WHERE user_id = ?",
-            userId);
+        const [rows] = await maria.query<RowDataPacket[]>(
+            "SELECT user_id, admin_id, username, nickname, birthday, email, phone, address, created_at, updated_at FROM user WHERE user_id = ? AND admin_id = ?",
+            [userId, adminId]);
+
+        if (rows.length === 0) return null
+
+        rows[0].password = '';
+
+        return rows[0] as UserType;
     } catch (error) {
         console.log(error);
         throw new Error("Error finding user");
     }
-
-    if (rows.length === 0) return null
-    if (rows.length > 1) throw new Error("Error, multiple users with Id: " + userId);
-
-    const row = rows[0];
-
-    const user: UserType = {
-        user_id: row.user_id,
-        admin_id: row.admin_id,
-        username: row.username,
-        nickname: row.nickname,
-        password: '',
-        birthday: row.birthday,
-        email: row.email,
-        phone: row.phone,
-        address: row.address,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-    }
-
-    return user;
 }
 
 const del = async (userId: string, adminId: string) => {

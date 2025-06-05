@@ -10,8 +10,8 @@ export const HalfAdmin = z.object({
 
 export const Admin = HalfAdmin.extend({
     admin_id: z.string(),
-    createdAt: z.string().transform(str => new Date(str)),
-    updatedAt: z.string().transform(str => new Date(str))
+    created_at: z.string().transform(str => new Date(str)),
+    updated_at: z.string().transform(str => new Date(str))
 }).strict();
 
 export type AdminType = z.infer<typeof Admin>;
