@@ -12,17 +12,17 @@ const registerRefresh = async (token: string, userId: string, adminId: string, e
     const expData = new Date(currDate.getTime() + expired * 1000);
 
     const userToken: UserTokenType = {
-        user_token_id: tokenId,
+        token_id: tokenId,
         user_id: userId,
         admin_id: adminId,
         token: token,
-        createdAt: currDate,
+        created_at: currDate,
         expired_at: expData
     };
 
     try {
-        await maria.query("INSERT INTO user_tokens (user_token_id, user_id, admin_id, token, created_at, expired_at) VALUES (?, ?, ?, ?, ?, ?)",
-            [userToken.user_token_id, userToken.user_id, userToken.admin_id, userToken.token, userToken.createdAt, userToken.expired_at]);
+        await maria.query("INSERT INTO user_tokens (token_id, user_id, admin_id, token, created_at, expired_at) VALUES (?, ?, ?, ?, ?, ?)",
+            [userToken.token_id, userToken.user_id, userToken.admin_id, userToken.token, userToken.created_at, userToken.expired_at]);
     } catch (error) {
         console.error(error);
         throw new Error("Failed to register user token in database");
@@ -35,7 +35,7 @@ const registerRefresh = async (token: string, userId: string, adminId: string, e
 const getRefresh = async (token: string, adminId: string): Promise<UserTokenType | null> => {
     try {
         const [rows] = await maria.query<RowDataPacket[]>(
-            "SELECT user_token_id, user_id, admin_id, token, created_at, expired_at FROM user_tokens WHERE token = ? AND admin_id = ?",
+            "SELECT token_id, user_id, admin_id, token, created_at, expired_at FROM user_tokens WHERE token = ? AND admin_id = ?",
             [token, adminId]);
         if (rows.length === 0) {
             return null;
