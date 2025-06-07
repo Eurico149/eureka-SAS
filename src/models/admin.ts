@@ -9,7 +9,7 @@ export const HalfAdmin = z.object({
 }).strict();
 
 export const Admin = HalfAdmin.extend({
-    admin_id: z.string(),
+    admin_id: z.string().length(36, 'Admin ID must be 36 characters long'),
     created_at: z.string().transform(str => new Date(str)),
     updated_at: z.string().transform(str => new Date(str))
 }).strict();
