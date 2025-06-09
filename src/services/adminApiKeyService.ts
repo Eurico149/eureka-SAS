@@ -20,4 +20,16 @@ const register = async (adminId: string): Promise<AdminApiKeyType> => {
 }
 
 
-export default {register};
+const get = async (apiKey: string): Promise<AdminApiKeyType | null> => {
+    const cachedApiKey = await apiKeyRepository.getCache(apiKey);
+    if (cachedApiKey) return cachedApiKey;
+
+    const adminApiKey = await apiKeyRepository.get(apiKey);
+
+    if (adminApiKey) await apiKeyRepository.registerCache(adminApiKey);
+
+    return adminApiKey;
+}
+
+
+export default {register, get};
