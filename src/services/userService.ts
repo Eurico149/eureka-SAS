@@ -1,13 +1,21 @@
-import {HalfUserType} from "../models/user";
-import userRepository from "../repository/userRepository";
+import {HalfUserType, UserType} from "../models/user";
+import userRepository from "../repositories/userRepository";
 import bcrypt from "bcrypt";
+import {v4} from "uuid";
 
 
-const register = async (user: HalfUserType) => {
-    user.password = await bcrypt.hash(user.password, 10);
+const register = async (halfUser: HalfUserType) => {
+    halfUser.password = await bcrypt.hash(halfUser.password, 10);
 
-    const responseUser = await userRepository.register(user);
-    const {password, ...rest} = responseUser;
+    const user: UserType = {
+        ...halfUser,
+        user_id: v4(),
+        created_at: new Date(),
+        updated_at: new Date()
+    }
+
+    await userRepository.register(user);
+    const {password, ...rest} = user;
     return rest;
 }
 
