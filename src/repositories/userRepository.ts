@@ -24,6 +24,43 @@ const register = async (user: UserType) => {
 }
 
 
+const registerList = async (users: UserType[]) => {
+    const placeholders = users.map(() => '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').join(', ');
+
+    const valores = users.flatMap(user => [
+        user.user_id,
+        user.admin_id,
+        user.username,
+        user.nickname,
+        user.password,
+        user.birthday,
+        user.email,
+        user.phone,
+        user.address,
+        user.created_at,
+        user.updated_at
+    ]);
+
+    const query =
+        `INSERT INTO user (user_id, admin_id, username, nickname, password, birthday, email, phone, address, created_at, updated_at) VALUES ${placeholders}`;
+
+    await maria.query(query, valores);
+}
+
+
+const getAll = async (adminId: string) => {
+    const [rows] = await maria.query<RowDataPacket[]>(
+        "SELECT user_id, admin_id, username, nickname, birthday, email, phone, address, created_at, updated_at FROM user WHERE admin_id = ?",
+        [adminId]);
+
+    rows.forEach(row => {
+        row.password = '';
+    });
+
+    return rows as UserType[];
+}
+
+
 const findByUsername = async (username: string, adminId: string) => {
     const [rows] = await maria.query<RowDataPacket[]>(
         "SELECT user_id, admin_id, username, nickname, birthday, email, phone, address, created_at, updated_at FROM user WHERE username = ? AND admin_id = ?",
@@ -117,4 +154,4 @@ const updateAddress = async (userId: string, adminId: string, newAddress: string
 };
 
 
-export default {register, del, findById, findByUsername, updatePassword, updateAddress, updateEmail, updatePhone, updateNickname, updateBirthday, updateUsername}
+export default {register, registerList, del, getAll, findById, findByUsername, updatePassword, updateAddress, updateEmail, updatePhone, updateNickname, updateBirthday, updateUsername}

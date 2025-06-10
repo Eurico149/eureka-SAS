@@ -16,7 +16,7 @@ export const apikeyMiddleware = async (req: Request, res: Response, next: NextFu
             res.status(401).json({message: "Invalid API Key"});
             return
         }
-        req.body.admin_id = adminApiKey.admin_id;
+        res.locals.admin_id = adminApiKey.admin_id;
         next();
     } catch (error) {
         console.error("Error in API Key middleware: ", error);

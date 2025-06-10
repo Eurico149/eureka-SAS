@@ -19,7 +19,7 @@ const register = async (req: Request, res: Response):Promise<any> => {
     try {
         const storedAdmin = await admService.register(admin);
         const apiKey = await adminApiKeyService.register(storedAdmin.admin_id);
-        return res.status(201).json({storedAdmin, "api_key": apiKey.api_key});
+        return res.status(201).json({"admin": storedAdmin, "api_key": apiKey.api_key});
     } catch (error) {
         // temporary workaround for error handling
         console.error("Error registering admin or API key:", error);
