@@ -1,7 +1,6 @@
 import redis from '../conns/connectionRedis'
 import maria from "../conns/connectionMaria";
 import {UserTokenType} from "../models/userToken";
-import {v4} from 'uuid';
 import {ResultSetHeader, RowDataPacket} from "mysql2";
 
 
@@ -17,6 +16,24 @@ const registerRefresh = async (userToken: UserTokenType): Promise<void> => {
 
     await maria.query(
         "INSERT INTO user_rf_token (token_id, user_id, admin_id, token, created_at, expired_at) VALUES (?, ?, ?, ?, ?, ?)",
+        values);
+}
+
+
+const registerRefreshList = async (userTokens: UserTokenType[]): Promise<void> => {
+    const placeholders = userTokens.map(() => '(?, ?, ?, ?, ?, ?)').join(', ');
+
+    const values = userTokens.flatMap(userToken => [
+        userToken.token_id,
+        userToken.user_id,
+        userToken.admin_id,
+        userToken.token,
+        userToken.created_at,
+        userToken.expired_at
+    ]);
+
+    await maria.query(
+        `INSERT INTO user_rf_token (token_id, user_id, admin_id, token, created_at, expired_at) VALUES ${placeholders}`,
         values);
 }
 
@@ -74,4 +91,4 @@ function keyRedis(token: string, adminId: string): string {
 }
 
 
-export default {registerRefresh, getRefresh, delRefresh, registerAccess, getAccess, delAccess}
+export default {registerRefresh, registerRefreshList, getRefresh, delRefresh, registerAccess, getAccess, delAccess}

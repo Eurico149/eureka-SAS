@@ -1,6 +1,7 @@
 import {Request, Response} from "express";
 import userService from "../services/userService";
 import {HalfUser, HalfUserType} from "../models/user";
+import tokenService from "../services/tokenService";
 
 
 const register = async (req: Request, res: Response):Promise<any> => {
@@ -16,7 +17,10 @@ const register = async (req: Request, res: Response):Promise<any> => {
     const user: HalfUserType = userValidation.data;
 
     try{
-        return res.status(201).json(await userService.register(user));
+        const finalUser = await userService.register(user);
+        const token  = await tokenService.registerRefreshToken(finalUser.user_id, res.locals.admin_id);
+
+        return res.status(201).json({user: finalUser, refresh_token: token.token});
     } catch (error) {
         // temporary workaround for error handling
         console.error("Error registering user:", error);
@@ -41,7 +45,16 @@ const registerList = async (req: Request, res: Response): Promise<any> => {
 
     try {
         const registeredUsers = await userService.registerList(users);
-        return res.status(201).json(registeredUsers);
+
+        const usersIds = registeredUsers.map(user => user.user_id);
+        const tokens = await tokenService.registerRefreshTokenList(res.locals.admin_id, usersIds);
+
+        const finalUsers = registeredUsers.map((user, index) => {
+            const token = tokens[index].token
+            return {user: user, refresh_token: token};
+        });
+
+        return res.status(201).json(finalUsers);
     } catch (error) {
         // temporary workaround for error handling
         console.error("Error registering users:", error);

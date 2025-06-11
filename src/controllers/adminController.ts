@@ -23,7 +23,7 @@ const register = async (req: Request, res: Response):Promise<any> => {
     } catch (error) {
         // temporary workaround for error handling
         console.error("Error registering admin or API key:", error);
-        return res.status(500).json({"message": "Failed to register admin or API key"});
+        return res.status(500).json({"message": "Failed to register admin"});
     }
 }
 
