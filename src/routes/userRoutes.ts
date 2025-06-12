@@ -12,5 +12,4 @@ router.get("/id/:id", apikeyMiddleware, userController.getUserById);
 router.get("/username/:username", apikeyMiddleware, userController.getUserByUsername);
 router.delete("/:id", apikeyMiddleware, userController.deleteUser);
 
-
 export default router;
