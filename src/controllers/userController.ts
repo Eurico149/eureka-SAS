@@ -75,6 +75,26 @@ const getAllUsers = async (req: Request, res: Response): Promise<any> => {
 }
 
 
+const getUserByLogin = async (req: Request, res: Response): Promise<any> => {
+    const {username, password} = req.body;
+    if (!username || !password) return res.status(400).json({message: "Username and password are required"});
+
+    try {
+        const user = await userService.getByLogin(username, password, res.locals.admin_id);
+
+        if (!user) return res.status(404).json({message: "Invalid credentials"});
+
+        const token = await tokenService.registerRefreshToken(user.user_id, res.locals.admin_id);
+
+        return res.status(200).json({refresh_token: token.token});
+    } catch (error) {
+        // temporary workaround for error handling
+        console.error("Error fetching user by login:", error);
+        return res.status(500).json({message: "Error fetching user by login"});
+    }
+}
+
+
 const getUserById = async (req: Request, res: Response): Promise<any> => {
     const userId = req.params.id;
     if (!userId) return res.status(400).json({message: "User ID is required"});
@@ -129,4 +149,4 @@ const deleteUser = async (req: Request, res: Response): Promise<any> => {
 }
 
 
-export default {register,getAllUsers, getUserById, getUserByUsername, deleteUser, registerList};
+export default {register,getAllUsers, getUserById, getUserByUsername, getUserByLogin, deleteUser, registerList};

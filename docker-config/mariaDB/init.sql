@@ -45,4 +45,3 @@ CREATE TABLE admin_api_key(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id) ON DELETE CASCADE
 );
-

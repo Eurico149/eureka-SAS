@@ -49,8 +49,16 @@ const getAll = async (adminId: string) => {
 
 
 const getById = async (userId: string, adminId: string) => {
+    const userCahce = await userRepository.findByIdCache(userId, adminId);
+    if (userCahce) {
+        const {password, ...rest} = userCahce;
+        return rest;
+    }
+
     const user = await userRepository.findById(userId, adminId);
     if (!user) return null;
+
+    await userRepository.registerCache(user);
 
     const {password, ...rest} = user;
     return rest;
@@ -66,9 +74,21 @@ const getByUsername = async (username: string, adminId: string): Promise<any> =>
 }
 
 
+const getByLogin = async (username: string, pass: string, adminId: string): Promise<any> => {
+    const user = await userRepository.findByUsernamePassword(username, adminId);
+    if (!user) return null;
+
+    const isPasswordValid = await bcrypt.compare(pass, user.password);
+    if (!isPasswordValid) return null;
+
+    const {password, ...rest} = user;
+    return rest;
+}
+
+
 const del = async (userId: string, adminId: string) => {
     return await userRepository.del(userId, adminId);
 }
 
 
-export default {register, registerList, getAll, getById, getByUsername, del};
+export default {register, registerList, getAll, getById, getByUsername, getByLogin, del};

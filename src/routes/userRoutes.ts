@@ -7,6 +7,7 @@ const router = Router();
 
 router.post("/register", apikeyMiddleware, userController.register);
 router.post("/register/list", apikeyMiddleware, userController.registerList);
+router.post("/login", apikeyMiddleware, userController.getUserByLogin);
 router.get("/", apikeyMiddleware, userController.getAllUsers);
 router.get("/id/:id", apikeyMiddleware, userController.getUserById);
 router.get("/username/:username", apikeyMiddleware, userController.getUserByUsername);

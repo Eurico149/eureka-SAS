@@ -1,6 +1,7 @@
 import maria from "../conns/connectionMaria";
 import {UserType} from "../models/user";
 import {ResultSetHeader, RowDataPacket} from "mysql2";
+import redis from "../conns/connectionRedis";
 
 
 const register = async (user: UserType) => {
@@ -21,6 +22,12 @@ const register = async (user: UserType) => {
     await maria.query(
         "INSERT INTO user (user_id, admin_id, username, nickname, password, birthday, email, phone, address, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         values);
+}
+
+
+const registerCache = async (user: UserType) => {
+    const key = keyRedis(user.user_id, user.admin_id);
+    await redis.set(key, JSON.stringify(user), 'EX', 60 * 60 * 24)
 }
 
 
@@ -73,6 +80,7 @@ const findByUsername = async (username: string, adminId: string) => {
     return rows[0] as UserType;
 }
 
+
 const findById = async (userId: string, adminId: string) => {
     const [rows] = await maria.query<RowDataPacket[]>(
         "SELECT user_id, admin_id, username, nickname, birthday, email, phone, address, created_at, updated_at FROM user WHERE user_id = ? AND admin_id = ?",
@@ -84,6 +92,27 @@ const findById = async (userId: string, adminId: string) => {
 
     return rows[0] as UserType;
 }
+
+
+const findByIdCache = async (userId: string, adminId: string): Promise<UserType | null> => {
+    const key = keyRedis(userId, adminId)
+    const user = await redis.get(key);
+
+    if (user) return JSON.parse(user) as UserType;
+    return null
+}
+
+
+const findByUsernamePassword = async (username: string, adminId: string): Promise<UserType | null> => {
+    const [rows] = await maria.query<RowDataPacket[]>(
+        "SELECT user_id, admin_id, username, password, nickname, birthday, email, phone, address, created_at, updated_at FROM user WHERE username = ? AND admin_id = ?",
+        [username, adminId]);
+
+    if (rows.length === 0) return null
+
+    return rows[0] as UserType;
+}
+
 
 const del = async (userId: string, adminId: string) => {
     const [result] = await maria.query<ResultSetHeader>(
@@ -154,4 +183,9 @@ const updateAddress = async (userId: string, adminId: string, newAddress: string
 };
 
 
-export default {register, registerList, del, getAll, findById, findByUsername, updatePassword, updateAddress, updateEmail, updatePhone, updateNickname, updateBirthday, updateUsername}
+const keyRedis = (userId: string, adminId: string) => {
+    return `user:${userId}:${adminId}`;
+}
+
+
+export default {register, registerCache, registerList, del, getAll, findById, findByIdCache, findByUsername, findByUsernamePassword, updatePassword, updateAddress, updateEmail, updatePhone, updateNickname, updateBirthday, updateUsername}
