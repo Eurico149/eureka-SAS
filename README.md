@@ -1,6 +1,8 @@
-# SAS (Statefull Authentification Service)
+# Eureka-SAS
 
-eureka-SAS is a stateful authentication service that provides a secure and efficient way to manage user sessions. 
+Eureka-SAS is a stateful authentication service that provides a secure and efficient way to manage user sessions.
+It is designed to handle user authentication in a scalable and lightweight manner, 
+making it suitable for modern web applications.
 
 # Stack
 - Typescript
@@ -14,7 +16,7 @@ eureka-SAS is a stateful authentication service that provides a secure and effic
 git clone https://github.com/Eurico149/eureka-SAS.git
 cd eureka-SAS
 
-docker compose up --build --scale api=2
+docker compose up --scale api=2
 ```
 It's also possible to test and see the endpoints of this service using insomnia with 
 the json file provided in the root directory.

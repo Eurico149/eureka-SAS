@@ -2,7 +2,7 @@ services:
 
   mariadb:
     image: mariadb:latest
-    restart: unless-stopped
+    restart: no
     container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: ${MARIA_ROOT_PASSWORD:-rootpassword}
@@ -15,7 +15,7 @@ services:
 
   redis:
     image: redis:latest
-    restart: unless-stopped
+    restart: no
     container_name: redis
     command: redis-server --maxmemory 200mb --maxmemory-policy allkeys-lru
     environment:
@@ -23,7 +23,7 @@ services:
 
   nginx:
     image: nginx:latest
-    restart: unless-stopped
+    restart: no
     container_name: nginx
     ports:
       - "8080:80"
@@ -34,11 +34,9 @@ services:
 
   api:
     build: .
-    restart: unless-stopped
-    depends_on:
-      - mariadb
-      - redis
+    restart: no
     environment:
+      - PORT=${PORT:-80}
       - MARIA_USER=${MARIA_USER:-user}
       - MARIA_PASSWORD=${MARIA_PASSWORD:-password}
       - MARIA_DB_NAME=${MARIA_DB_NAME:-database}
@@ -48,6 +46,9 @@ services:
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_PASSWORD=${REDIS_PASSWORD:-redispassword}
+    depends_on:
+      - mariadb
+      - redis
 
 volumes:
   mariadb_data:
