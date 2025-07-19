@@ -1,6 +1,7 @@
 # Eureka-SAS
 
 Eureka-SAS is a stateful authentication service that provides a secure and efficient way to manage user sessions.
+<br>
 It is designed to handle user authentication in a scalable and lightweight manner, 
 making it suitable for modern web applications.
 
@@ -44,3 +45,6 @@ eureka-SAS/
 ├── README.md
 └── tsconfig.json
 ```
+
+## License
+This project is licensed under the [MIT License](LICENSE).
